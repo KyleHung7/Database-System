@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Record{% endblock %}
+
+{% block content %}
+<h1>Edit Patient Record</h1>
+<hr>
+<form action="{{ url_for('update_record', record_id=record.id) }}" method="POST">
+    <div class="mb-3">
+        <label for="patient_name" class="form-label">Patient Name</label>
+        <input type="text" class="form-control" id="patient_name" name="patient_name" value="{{ record.patient_name }}" required>
+    </div>
+    <div class="mb-3">
+        <label for="date_of_birth" class="form-label">Date of Birth</label>
+        <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ record.date_of_birth.strftime('%Y-%m-%d') if record.date_of_birth }}">
+    </div>
+    <div class="mb-3">
+        <label for="condition_desc" class="form-label">Main Condition Description</label>
+        <input type="text" class="form-control" id="condition_desc" name="condition_desc" value="{{ record.condition_desc }}" required>
+    </div>
+    <div class="mb-3">
+        <label for="notes" class="form-label">Detailed Notes and Mutual Follow-up Content</label>
+        <textarea class="form-control" id="notes" name="notes" rows="5">{{ record.notes }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Update Record</button>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
