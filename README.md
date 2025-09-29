@@ -22,7 +22,7 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 ## Example Implementations  
 
 ### **HW1: Your First Full Stack Web App with SQL**  
-**Folder:** `HW1`  
+**Folder:** `HW1` 
 - **Focus**: Build a basic full stack web application connected to an SQL database.  
 - **Key Concepts**:  
   - SQL schema creation  
