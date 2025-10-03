@@ -1,0 +1,22 @@
+-- Create your database
+CREATE DATABASE patient_system;
+
+-- Use your database
+USE patient_system;
+
+-- Create a new patient records table
+CREATE TABLE patient_records (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_name VARCHAR(100) NOT NULL,
+    date_of_birth DATE,
+    condition_desc VARCHAR(255) NOT NULL,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- (Optional) Insert some sample data for testing
+INSERT INTO patient_records (patient_name, date_of_birth, condition_desc, notes) VALUES
+('David Wang', '1985-05-20', 'Stage 1 Hypertension', 'Takes medication on schedule daily, blood pressure well controlled. Low-salt diet recommended.'),
+('Emily Chen', '1992-11-10', 'Type 2 Diabetes', 'Blood sugar is being monitored. Needs community encouragement to maintain exercise habits.'),
+('John Lee', '1978-01-15', 'Allergic Rhinitis', 'Symptoms are more pronounced during seasonal changes. Nasal spray has been started.');

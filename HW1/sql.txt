@@ -1,22 +1,50 @@
--- Create your database
-CREATE DATABASE patient_system;
+-- Create database "patient_visit"
+CREATE DATABASE patient_visit;
+USE patient_visit;
 
--- Use your database
-USE patient_system;
-
--- Create a new patient records table
-CREATE TABLE patient_records (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    patient_name VARCHAR(100) NOT NULL,
-    date_of_birth DATE,
-    condition_desc VARCHAR(255) NOT NULL,
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+-- Patients table
+CREATE TABLE patients (
+    patient_id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    birth_date DATE NOT NULL
 );
 
--- (Optional) Insert some sample data for testing
-INSERT INTO patient_records (patient_name, date_of_birth, condition_desc, notes) VALUES
-('David Wang', '1985-05-20', 'Stage 1 Hypertension', 'Takes medication on schedule daily, blood pressure well controlled. Low-salt diet recommended.'),
-('Emily Chen', '1992-11-10', 'Type 2 Diabetes', 'Blood sugar is being monitored. Needs community encouragement to maintain exercise habits.'),
-('John Lee', '1978-01-15', 'Allergic Rhinitis', 'Symptoms are more pronounced during seasonal changes. Nasal spray has been started.');
+-- Doctors table
+CREATE TABLE doctors (
+    doctor_id INT AUTO_INCREMENT PRIMARY KEY,
+    doctor_name VARCHAR(100) NOT NULL,
+    specialty VARCHAR(100) NOT NULL
+);
+
+-- Visits table (linking patients and doctors)
+CREATE TABLE visits (
+    visit_id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_id INT NOT NULL,
+    doctor_id INT NOT NULL,
+    visit_date DATETIME NOT NULL,
+    diagnosis VARCHAR(255) NOT NULL,
+    notes TEXT,
+    FOREIGN KEY (patient_id) REFERENCES patients(patient_id),
+    FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id)
+);
+
+-- Sample patients
+INSERT INTO patients (first_name, last_name, birth_date) VALUES
+('John', 'Doe', '1985-06-15'),
+('Jane', 'Smith', '1990-09-20'),
+('Alice', 'Brown', '1978-12-03');
+
+-- Sample doctors
+INSERT INTO doctors (doctor_name, specialty) VALUES
+('Dr. White', 'Cardiology'),
+('Dr. Green', 'Neurology'),
+('Dr. Black', 'General Medicine');
+
+-- Sample visits
+INSERT INTO visits (patient_id, doctor_id, visit_date, diagnosis, notes) VALUES
+(1, 1, '2025-09-25 10:00:00', 'Hypertension', 'Follow-up in 3 months'),
+(2, 2, '2025-09-26 14:30:00', 'Migraine', 'Prescribed medication'),
+(1, 2, '2025-10-01 09:00:00', 'Headache', 'Possible stress-related'),
+(3, 3, '2025-10-02 15:45:00', 'Flu', 'Advised rest and fluids'),
+(2, 1, '2025-10-03 11:15:00', 'Chest Pain', 'Referred for ECG test');

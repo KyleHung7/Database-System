@@ -1,105 +1,55 @@
-import os
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 import mysql.connector
 from dotenv import load_dotenv
-
-# 載入 .env 檔案中的環境變數
-load_dotenv()
+import os
 
 app = Flask(__name__)
+load_dotenv()  # Load .env file
 
-# 從環境變數讀取資料庫連線設定
+# MySQL connection config from environment variables
 db_config = {
-    "host": os.getenv("DB_HOST"),
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
-    "database": os.getenv("DB_NAME")
+    'user': os.getenv('DB_USER'),
+    'password': os.getenv('DB_PASSWORD'),
+    'host': os.getenv('DB_HOST'),
+    'database': os.getenv('DB_NAME')
 }
 
-def get_db_connection():
-    """建立並返回資料庫連線"""
-    conn = mysql.connector.connect(**db_config)
-    return conn
-
-# 首頁 (Read)：顯示所有病患紀錄
-@app.route("/")
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    conn = get_db_connection()
+    filter_date = request.form.get('filter_date')
+    sort_order = request.form.get('sort_order', 'ASC')
+    keyword = request.form.get('keyword')
+
+    conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM patient_records ORDER BY created_at DESC")
-    records = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return render_template("index.html", records=records)
 
-# 新增紀錄的頁面 (顯示表單)
-@app.route("/add")
-def add_form():
-    return render_template("add_record.html")
-
-# 處理新增紀錄的請求 (Create)
-@app.route("/create", methods=["POST"])
-def create_record():
-    name = request.form["patient_name"]
-    dob = request.form["date_of_birth"]
-    condition = request.form["condition_desc"]
-    notes = request.form["notes"]
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    # 注意：如果 date_of_birth 是可選的，你可能需要處理空字串的情況
-    sql = "INSERT INTO patient_records (patient_name, date_of_birth, condition_desc, notes) VALUES (%s, %s, %s, %s)"
-    cursor.execute(sql, (name, dob if dob else None, condition, notes))
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return redirect(url_for("index"))
-
-# 編輯紀錄的頁面 (顯示已有資料的表單)
-@app.route("/edit/<int:record_id>")
-def edit_form(record_id):
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM patient_records WHERE id = %s", (record_id,))
-    record = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    if record:
-        return render_template("edit_record.html", record=record)
-    return "Record not found", 404
-
-# 處理更新紀錄的請求 (Update)
-@app.route("/update/<int:record_id>", methods=["POST"])
-def update_record(record_id):
-    name = request.form["patient_name"]
-    dob = request.form["date_of_birth"]
-    condition = request.form["condition_desc"]
-    notes = request.form["notes"]
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    sql = """
-        UPDATE patient_records 
-        SET patient_name = %s, date_of_birth = %s, condition_desc = %s, notes = %s 
-        WHERE id = %s
+    query = """
+        SELECT v.visit_id, p.first_name, p.last_name, d.doctor_name, v.visit_date, v.diagnosis, v.notes
+        FROM visits v
+        JOIN patients p ON v.patient_id = p.patient_id
+        JOIN doctors d ON v.doctor_id = d.doctor_id
+        WHERE 1=1
     """
-    cursor.execute(sql, (name, dob if dob else None, condition, notes, record_id))
-    conn.commit()
+    params = []
+
+    if filter_date:
+        query += " AND DATE(v.visit_date) = %s"
+        params.append(filter_date)
+
+    if keyword:
+        query += " AND v.diagnosis LIKE %s"
+        params.append(f"%{keyword}%")
+
+    query += f" ORDER BY v.visit_date {sort_order}"
+
+    cursor.execute(query, params)
+    records = cursor.fetchall()
+
     cursor.close()
     conn.close()
-    return redirect(url_for("index"))
 
-# 處理刪除紀錄的請求 (Delete)
-@app.route("/delete/<int:record_id>", methods=["POST"])
-def delete_record(record_id):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM patient_records WHERE id = %s", (record_id,))
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return redirect(url_for("index"))
+    return render_template('index.html', records=records,
+                           filter_date=filter_date, sort_order=sort_order, keyword=keyword)
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
