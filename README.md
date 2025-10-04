@@ -24,7 +24,7 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 ### **HW1: My First Full Stack Web App with SQL**  
 **Folder:** [HW1](https://github.com/KyleHung7/Database-System/tree/main/HW1)
 
-**Video:**[https://youtu.be/sW6FFNxqIDQ](https://youtu.be/sW6FFNxqIDQ)
+**Video:** [https://youtu.be/sW6FFNxqIDQ](https://youtu.be/sW6FFNxqIDQ)
 - **Focus**: Build a basic full stack web application connected to an SQL database.  
 - **Key Concepts**:  
   - SQL schema creation  
