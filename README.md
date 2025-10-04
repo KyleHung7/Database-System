@@ -21,7 +21,7 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 
 ## Example Implementations  
 
-### **HW1: Your First Full Stack Web App with SQL**  
+### **HW1: My First Full Stack Web App with SQL**  
 **Folder:** [HW1](https://github.com/KyleHung7/Database-System/tree/main/HW1)
 - **Focus**: Build a basic full stack web application connected to an SQL database.  
 - **Key Concepts**:  
@@ -41,7 +41,7 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 
 ---
 
-### **HW3: Your First Full Stack Web App with NoSQL**  
+### **HW3: My First Full Stack Web App with NoSQL**  
 **Folder:** `HW3`  
 - **Focus**: Build a full stack web application using a **NoSQL** database.  
 - **Key Concepts**:  
