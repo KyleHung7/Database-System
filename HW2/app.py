@@ -3,12 +3,12 @@ from flask import Flask, render_template, request, redirect, url_for
 import mysql.connector
 from dotenv import load_dotenv
 
-# 載入 .env 檔案中的環境變數
+# Load environment variables from the .env file
 load_dotenv()
 
 app = Flask(__name__)
 
-# 從環境變數讀取資料庫連線設定
+# Read database connection settings from environment variables
 db_config = {
     "host": os.getenv("DB_HOST"),
     "user": os.getenv("DB_USER"),
@@ -17,11 +17,11 @@ db_config = {
 }
 
 def get_db_connection():
-    """建立並返回資料庫連線"""
+    """Create and return a database connection"""
     conn = mysql.connector.connect(**db_config)
     return conn
 
-# 首頁 (Read)：顯示所有病患紀錄
+# Home page (Read): display all patient records
 @app.route("/")
 def index():
     conn = get_db_connection()
@@ -32,12 +32,12 @@ def index():
     conn.close()
     return render_template("index.html", records=records)
 
-# 新增紀錄的頁面 (顯示表單)
+# Add new record page (shows the form)
 @app.route("/add")
 def add_form():
     return render_template("add_record.html")
 
-# 處理新增紀錄的請求 (Create)
+# Handle the request to create a new record (Create)
 @app.route("/create", methods=["POST"])
 def create_record():
     name = request.form["patient_name"]
@@ -47,15 +47,18 @@ def create_record():
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    # 注意：如果 date_of_birth 是可選的，你可能需要處理空字串的情況
-    sql = "INSERT INTO patient_records (patient_name, date_of_birth, condition_desc, notes) VALUES (%s, %s, %s, %s)"
+    # Note: If date_of_birth is optional, handle empty string cases
+    sql = """
+        INSERT INTO patient_records (patient_name, date_of_birth, condition_desc, notes)
+        VALUES (%s, %s, %s, %s)
+    """
     cursor.execute(sql, (name, dob if dob else None, condition, notes))
     conn.commit()
     cursor.close()
     conn.close()
     return redirect(url_for("index"))
 
-# 編輯紀錄的頁面 (顯示已有資料的表單)
+# Edit record page (shows the form with existing data)
 @app.route("/edit/<int:record_id>")
 def edit_form(record_id):
     conn = get_db_connection()
@@ -68,7 +71,7 @@ def edit_form(record_id):
         return render_template("edit_record.html", record=record)
     return "Record not found", 404
 
-# 處理更新紀錄的請求 (Update)
+# Handle the request to update an existing record (Update)
 @app.route("/update/<int:record_id>", methods=["POST"])
 def update_record(record_id):
     name = request.form["patient_name"]
@@ -89,7 +92,7 @@ def update_record(record_id):
     conn.close()
     return redirect(url_for("index"))
 
-# 處理刪除紀錄的請求 (Delete)
+# Handle the request to delete a record (Delete)
 @app.route("/delete/<int:record_id>", methods=["POST"])
 def delete_record(record_id):
     conn = get_db_connection()
@@ -99,7 +102,6 @@ def delete_record(record_id):
     cursor.close()
     conn.close()
     return redirect(url_for("index"))
-
 
 if __name__ == "__main__":
     app.run(debug=True)
