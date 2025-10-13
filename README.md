@@ -22,9 +22,12 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 ## Example Implementations  
 
 ### **HW1: My First Full Stack Web App with SQL**  
-**Folder:** [HW1](https://github.com/KyleHung7/Database-System/tree/main/HW1)
-
+**Folder:** [HW1-1](https://github.com/KyleHung7/Database-System/tree/main/HW1-1)
 **Video:** [https://youtu.be/sW6FFNxqIDQ](https://youtu.be/sW6FFNxqIDQ)
+
+**Folder:** [HW2](https://github.com/KyleHung7/Database-System/tree/main/HW1-2)
+**Video:** [https://youtu.be/a2oy_D1C3Y0](https://youtu.be/a2oy_D1C3Y0)
+
 - **Focus**: Build a basic full stack web application connected to an SQL database.  
 - **Key Concepts**:  
   - SQL schema creation  
@@ -34,9 +37,9 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 ---
 
 ### **HW2: SQL CRUD Operations**  
-**Folder:** [HW2](https://github.com/KyleHung7/Database-System/tree/main/HW2) 
+**Folder:**
 
-**Video:** [https://youtu.be/a2oy_D1C3Y0](https://youtu.be/a2oy_D1C3Y0)
+**Video:** 
 - **Focus**: Master **Create, Read, Update, Delete (CRUD)** operations with SQL.  
 - **Key Concepts**:  
   - Writing SQL queries for each CRUD operation  
