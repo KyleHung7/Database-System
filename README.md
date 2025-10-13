@@ -35,6 +35,8 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 
 ### **HW2: SQL CRUD Operations**  
 **Folder:** [HW2](https://github.com/KyleHung7/Database-System/tree/main/HW2) 
+
+**Video:** [https://youtu.be/a2oy_D1C3Y0](https://youtu.be/a2oy_D1C3Y0)
 - **Focus**: Master **Create, Read, Update, Delete (CRUD)** operations with SQL.  
 - **Key Concepts**:  
   - Writing SQL queries for each CRUD operation  
