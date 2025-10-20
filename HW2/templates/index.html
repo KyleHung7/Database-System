@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+
+{% block title %}病患列表{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-700">病患總覽</h1>
+    <a href="{{ url_for('new_patient') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 transform hover:scale-105">
+        ＋ 新增病患
+    </a>
+</div>
+
+<div class="bg-white shadow-md rounded-lg overflow-x-auto">
+    <table class="min-w-full leading-normal">
+        <thead class="bg-gray-200">
+            <tr>
+                <th class="px-5 py-3 border-b-2 border-gray-300 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">姓名</th>
+                <th class="px-5 py-3 border-b-2 border-gray-300 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden md:table-cell">出生日期</th>
+                <th class="px-5 py-3 border-b-2 border-gray-300 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden sm:table-cell">性別</th>
+                <th class="px-5 py-3 border-b-2 border-gray-300 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">病情記錄數</th>
+                <th class="px-5 py-3 border-b-2 border-gray-300 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for patient in patients %}
+            <tr class="hover:bg-gray-50">
+                <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                    <p class="text-gray-900 whitespace-no-wrap">{{ patient.name }}</p>
+                </td>
+                <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm hidden md:table-cell">
+                    <p class="text-gray-900 whitespace-no-wrap">{{ patient.birthdate }}</p>
+                </td>
+                <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm hidden sm:table-cell">
+                    <p class="text-gray-900 whitespace-no-wrap">{{ patient.gender }}</p>
+                </td>
+                <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                    <span class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                        <span aria-hidden class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                        <span class="relative">{{ patient.condition_count }}</span>
+                    </span>
+                </td>
+                <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                    <div class="flex items-center space-x-3">
+                        <a href="{{ url_for('patient_detail', patient_id=patient.patient_id) }}" class="text-indigo-600 hover:text-indigo-900 font-semibold">詳情</a>
+                        <a href="{{ url_for('edit_patient', patient_id=patient.patient_id) }}" class="text-yellow-600 hover:text-yellow-900 font-semibold">編輯</a>
+                        <form action="{{ url_for('delete_patient', patient_id=patient.patient_id) }}" method="post" onsubmit="return confirm('確定要刪除這位病患嗎？這將會刪除所有相關記錄！');" class="inline">
+                            <button type="submit" class="text-red-600 hover:text-red-900 font-semibold">刪除</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="text-center py-10 text-gray-500">目前沒有病患資料，請點擊右上角新增。</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

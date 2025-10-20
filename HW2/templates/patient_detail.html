@@ -1,0 +1,93 @@
+{% extends 'layout.html' %}
+
+{% block title %}病患詳情 - {{ patient.name }}{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('index') }}" class="text-blue-600 hover:underline mb-6 inline-block">&larr; 返回病患列表</a>
+<div class="bg-white p-6 rounded-lg shadow-md mb-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ patient.name }}</h1>
+    <p class="text-gray-600">出生日期: {{ patient.birthdate }} | 性別: {{ patient.gender }} | 聯絡方式: {{ patient.contact_info or 'N/A' }}</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- 病情管理區塊 -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-bold mb-4 text-gray-700">病情記錄</h2>
+        <!-- 新增病情表單 -->
+        <form action="{{ url_for('add_condition', patient_id=patient.patient_id) }}" method="post" class="mb-6 p-4 border rounded-md bg-gray-50">
+            <h3 class="font-semibold mb-3 text-gray-600">新增病情</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                <input type="text" name="condition_name" placeholder="病情名稱" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" required>
+                <input type="date" name="diagnosis_date" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <input type="text" name="severity" placeholder="嚴重程度 (例如: 輕度)" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500">
+                 <button type="submit" class="bg-green-600 text-white p-2 rounded w-full hover:bg-green-700 transition duration-300">新增病情</button>
+            </div>
+        </form>
+
+        <!-- 病情列表 -->
+        <div class="space-y-2">
+        {% for condition in conditions %}
+        <div class="p-3 border-b flex justify-between items-center hover:bg-gray-50">
+            <div>
+                <p class="font-semibold text-gray-800">{{ condition.condition_name }} ({{ condition.severity or '未註明' }})</p>
+                <p class="text-sm text-gray-500">診斷日期: {{ condition.diagnosis_date }}</p>
+            </div>
+            <form action="{{ url_for('delete_condition', patient_id=patient.patient_id, condition_id=condition.condition_id) }}" method="post" onsubmit="return confirm('確定刪除此病情？相關的治療方案也會一併刪除！');">
+                <button type="submit" class="text-red-500 hover:text-red-700 text-sm font-semibold">刪除</button>
+            </form>
+        </div>
+        {% else %}
+        <p class="text-gray-500 text-center py-4">此病患尚無病情記錄。</p>
+        {% endfor %}
+        </div>
+    </div>
+
+    <!-- 治療管理區塊 -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-bold mb-4 text-gray-700">治療方案</h2>
+        <!-- 新增治療表單 -->
+        {% if conditions %}
+        <form action="{{ url_for('add_treatment', patient_id=patient.patient_id) }}" method="post" class="mb-6 p-4 border rounded-md bg-gray-50">
+             <h3 class="font-semibold mb-3 text-gray-600">新增治療方案</h3>
+            <div class="mb-3">
+                <select name="condition_id" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" required>
+                    <option value="">-- 選擇對應病情 --</option>
+                    {% for condition in conditions %}<option value="{{ condition.condition_id }}">{{ condition.condition_name }} ({{ condition.diagnosis_date }})</option>{% endfor %}
+                </select>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                <input type="text" name="treatment_name" placeholder="治療名稱" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" required>
+                <input type="date" name="start_date" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="text" name="dosage" placeholder="劑量 (例如: 每日 5mg)" class="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500">
+                <button type="submit" class="bg-green-600 text-white p-2 rounded w-full hover:bg-green-700 transition duration-300">新增方案</button>
+            </div>
+        </form>
+        {% else %}
+        <div class="text-sm text-yellow-800 bg-yellow-100 p-3 rounded-md mb-4">
+            <p>請先為此病患新增一筆病情記錄，才能新增對應的治療方案。</p>
+        </div>
+        {% endif %}
+        
+        <!-- 治療列表 -->
+        <div class="space-y-2">
+        {% for treatment in treatments %}
+        <div class="p-3 border-b flex justify-between items-center hover:bg-gray-50">
+            <div>
+                <p class="font-semibold text-gray-800">{{ treatment.treatment_name }} ({{ treatment.dosage or 'N/A' }})</p>
+                <p class="text-sm text-gray-500">針對: <span class="font-medium">{{ treatment.condition_name }}</span> | 開始日期: {{ treatment.start_date }}</p>
+            </div>
+            <form action="{{ url_for('delete_treatment', patient_id=patient.patient_id, treatment_id=treatment.treatment_id) }}" method="post" onsubmit="return confirm('確定刪除此治療方案？');">
+                <button type="submit" class="text-red-500 hover:text-red-700 text-sm font-semibold">刪除</button>
+            </form>
+        </div>
+        {% else %}
+        <p class="text-gray-500 text-center py-4">此病患尚無治療方案記錄。</p>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
