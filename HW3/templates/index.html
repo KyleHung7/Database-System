@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body p-4">
+        
+        <div class="d-flex justify-content-end mb-4">
+            <a href="{{ url_for('search_stock') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i> 新增股票
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">代號</th>
+                        <th scope="col">名稱</th>
+                        <th scope="col">買入價格</th>
+                        <th scope="col" class="d-none d-md-table-cell">備註</th>
+                        <th scope="col" class="text-end">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stock in stocks %}
+                    <tr>
+                        <td class="font-monospace text-primary fw-bold">{{ stock.symbol }}</td>
+                        <td>{{ stock.name }}</td>
+                        <td>${{ "%.2f"|format(stock.price) }}</td>
+                        <td class="d-none d-md-table-cell text-body-secondary">{{ stock.notes }}</td>
+                        <td class="text-end">
+                            <a href="{{ url_for('edit_stock', stock_id=stock._id) }}" class="btn btn-sm btn-outline-warning me-2">編輯</a>
+                            <form action="{{ url_for('delete_stock', stock_id=stock._id) }}" method="POST" class="d-inline" onsubmit="return confirm('確定要刪除這筆紀錄嗎？');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">刪除</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-body-secondary p-5">
+                            您的投資組合是空的。點擊右上角開始查詢並新增股票。
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

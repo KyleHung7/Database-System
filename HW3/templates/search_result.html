@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header d-flex align-items-center p-3">
+                {% if stock.logo %}
+                    <img src="{{ stock.logo }}" alt="{{ stock.name }} logo" style="width: 40px; height: 40px;" class="me-3 rounded-circle bg-light">
+                {% endif %}
+                <div>
+                    <h4 class="mb-0">{{ stock.name }} ({{ stock.symbol }})</h4>
+                </div>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <p class="text-body-secondary mb-1">目前市場價格</p>
+                    <h1 class="display-3 fw-bold">${{ "%.2f"|format(stock.price) }}</h1>
+                </div>
+
+                <hr class="my-4">
+
+                <h5 class="mb-3">確認買入並加入投資組合</h5>
+                <form action="{{ url_for('add_stock') }}" method="POST">
+                    <input type="hidden" name="symbol" value="{{ stock.symbol }}">
+                    <input type="hidden" name="name" value="{{ stock.name }}">
+                    <input type="hidden" name="price" value="{{ stock.price }}">
+
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">買入備註 (選填)</label>
+                        <textarea id="notes" name="notes" rows="3" class="form-control" placeholder="例如：看好 AI 前景，長期持有"></textarea>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-between mt-4">
+                        <a href="{{ url_for('search_stock') }}" class="btn btn-secondary">返回查詢</a>
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-check-circle me-2"></i>確認以此價格加入
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
