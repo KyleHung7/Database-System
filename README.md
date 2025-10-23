@@ -41,6 +41,8 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 **Folder:**
 
 **Video:** 
+<img width="566" height="888" alt="螢幕擷取畫面 2025-10-23 112938" src="https://github.com/user-attachments/assets/38d426bc-9067-4d2e-8a97-d505ab3521cb" />
+
 - **Focus**: Master **Create, Read, Update, Delete (CRUD)** operations with SQL.  
 - **Key Concepts**:  
   - Writing SQL queries for each CRUD operation  
