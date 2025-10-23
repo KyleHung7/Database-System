@@ -41,33 +41,7 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 **Folder:**
 
 **Video:** 
-erDiagram
-    patients {
-        int patient_id PK "Primary Key"
-        varchar(100) name "Full Name"
-        date birthdate "Date of Birth"
-        enum gender "Gender ('Male', 'Female', 'Other')"
-        varchar(100) contact_info "Contact Information"
-    }
-
-    conditions {
-        int condition_id PK "Primary Key"
-        int patient_id FK "Foreign Key (references patients)"
-        varchar(100) condition_name "Name of the condition"
-        date diagnosis_date "Date of diagnosis"
-        varchar(50) severity "Severity (e.g., Mild, Moderate)"
-    }
-
-    treatments {
-        int treatment_id PK "Primary Key"
-        int condition_id FK "Foreign Key (references conditions)"
-        varchar(100) treatment_name "Name of the treatment"
-        date start_date "Start date of treatment"
-        varchar(100) dosage "Dosage (e.g., 10mg daily)"
-    }
-
-    patients ||--o{ conditions : "Index page uses LEFT JOIN into calculate condition_count"
-    conditions ||--o{ treatments : "has"
+<pre> ```mermaid erDiagram patients { int patient_id PK "Primary Key" varchar(100) name "Full Name" date birthdate "Date of Birth" enum gender "Gender ('Male', 'Female', 'Other')" varchar(100) contact_info "Contact Information" } conditions { int condition_id PK "Primary Key" int patient_id FK "Foreign Key (references patients)" varchar(100) condition_name "Name of the condition" date diagnosis_date "Date of diagnosis" varchar(50) severity "Severity (e.g., Mild, Moderate)" } treatments { int treatment_id PK "Primary Key" int condition_id FK "Foreign Key (references conditions)" varchar(100) treatment_name "Name of the treatment" date start_date "Start date of treatment" varchar(100) dosage "Dosage (e.g., 10mg daily)" } patients ||--o{ conditions : "Index page uses LEFT JOIN into calculate condition_count" conditions ||--o{ treatments : "has" ``` </pre>
 
 
 - **Focus**: Master **Create, Read, Update, Delete (CRUD)** operations with SQL.  
