@@ -65,6 +65,10 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 
 ### **HW4: Query Data 3 (Delete with `deleteMany`)**  
 **Folder:** `HW4`  
+
+<img width="1872" height="662" alt="螢幕擷取畫面 2025-10-23 120336" src="https://github.com/user-attachments/assets/d2ddc1ab-6e42-408e-8c4f-0d9b547cdc67" />
+
+
 - **Focus**: Learn advanced NoSQL query operations with deletion.  
 - **Key Concepts**:  
   - Using `db.collection.deleteMany()` to remove multiple documents  
