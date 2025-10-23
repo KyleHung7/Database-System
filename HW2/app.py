@@ -1,25 +1,20 @@
+# app.py
+
 from flask import Flask, render_template, request, redirect, url_for, flash
 from dotenv import load_dotenv
 import os
 import mysql.connector
 
-# --- 1. 設定與初始化 ---
-
-# 載入 .env 檔案中的環境變數
+# --- 1. Setup and Initialization ---
 load_dotenv()
-
-# 初始化 Flask 應用
 app = Flask(__name__)
-
-# 從環境變數讀取 SECRET_KEY，這對於 flash 訊息至關重要
 app.secret_key = os.environ.get('SECRET_KEY')
 if not app.secret_key:
-    raise ValueError("錯誤：找不到 SECRET_KEY 環境變數。請在 .env 檔案中設定它。")
+    raise ValueError("ERROR: SECRET_KEY not found in environment variables. Please set it in your .env file.")
 
-# --- 2. 資料庫連線函式 ---
-
+# --- 2. Database Connection Function ---
 def get_db_connection():
-    """建立並返回一個 MySQL 資料庫連線，設定從環境變數讀取"""
+    """Establishes and returns a MySQL database connection using credentials from environment variables."""
     try:
         connection = mysql.connector.connect(
             host=os.environ.get('DB_HOST'),
@@ -29,20 +24,21 @@ def get_db_connection():
         )
         return connection
     except mysql.connector.Error as err:
-        print(f"資料庫連線錯誤: {err}")
+        print(f"Database connection error: {err}")
         return None
 
-# --- 3. 路由與視圖函式 (CRUD 邏輯) ---
+# --- 3. Routes and View Functions (CRUD Logic) ---
 
-# 主頁面：顯示所有病患 (READ with JOIN)
+# Main Page: Display all patients (READ with JOIN)
 @app.route('/')
 def index():
     conn = get_db_connection()
     if not conn:
-        flash('資料庫連線失敗，請檢查您的 .env 設定。', 'danger')
+        flash('Database connection failed. Please check your .env configuration.', 'danger')
         return render_template('index.html', patients=[])
-        
+    
     cursor = conn.cursor(dictionary=True)
+    # SQL JOIN Query: Select all patients and count their number of conditions
     query = """
     SELECT p.*, COUNT(c.condition_id) as condition_count
     FROM patients p
@@ -56,74 +52,59 @@ def index():
     conn.close()
     return render_template('index.html', patients=patients)
 
-# 新增病患 (CREATE)
+# Add a new patient (CREATE)
 @app.route('/patient/new', methods=['GET', 'POST'])
 def new_patient():
     if request.method == 'POST':
-        name = request.form['name']
-        birthdate = request.form['birthdate']
-        gender = request.form['gender']
-        contact_info = request.form['contact_info']
-        
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute(
             'INSERT INTO patients (name, birthdate, gender, contact_info) VALUES (%s, %s, %s, %s)',
-            (name, birthdate, gender, contact_info)
+            (request.form['name'], request.form['birthdate'], request.form['gender'], request.form['contact_info'])
         )
         conn.commit()
         cursor.close()
         conn.close()
-        
-        flash('病患資料已成功新增！', 'success')
+        flash('Patient created successfully!', 'success')
         return redirect(url_for('index'))
-    
     return render_template('patient_form.html', form_action='new_patient', patient=None)
 
-# 編輯病患 (UPDATE)
+# Edit an existing patient (UPDATE)
 @app.route('/patient/edit/<int:patient_id>', methods=['GET', 'POST'])
 def edit_patient(patient_id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    
     if request.method == 'POST':
-        name = request.form['name']
-        birthdate = request.form['birthdate']
-        gender = request.form['gender']
-        contact_info = request.form['contact_info']
-        
         cursor.execute(
             'UPDATE patients SET name=%s, birthdate=%s, gender=%s, contact_info=%s WHERE patient_id=%s',
-            (name, birthdate, gender, contact_info, patient_id)
+            (request.form['name'], request.form['birthdate'], request.form['gender'], request.form['contact_info'], patient_id)
         )
         conn.commit()
         cursor.close()
         conn.close()
-        
-        flash('病患資料已成功更新！', 'success')
+        flash('Patient details updated successfully!', 'success')
         return redirect(url_for('index'))
-        
+    
     cursor.execute('SELECT * FROM patients WHERE patient_id = %s', (patient_id,))
     patient = cursor.fetchone()
     cursor.close()
     conn.close()
-    
     return render_template('patient_form.html', form_action='edit_patient', patient=patient)
 
-# 刪除病患 (DELETE)
+# Delete a patient (DELETE)
 @app.route('/patient/delete/<int:patient_id>', methods=['POST'])
 def delete_patient(patient_id):
     conn = get_db_connection()
     cursor = conn.cursor()
+    # ON DELETE CASCADE will handle associated conditions and treatments
     cursor.execute('DELETE FROM patients WHERE patient_id = %s', (patient_id,))
     conn.commit()
     cursor.close()
     conn.close()
-    
-    flash('病患資料已成功刪除！', 'danger')
+    flash('Patient and all associated records deleted successfully.', 'danger')
     return redirect(url_for('index'))
 
-# 病患詳細頁面 (管理病情和治療的 CRUD)
+# Patient detail page (managing conditions and treatments)
 @app.route('/patient/<int:patient_id>')
 def patient_detail(patient_id):
     conn = get_db_connection()
@@ -147,10 +128,9 @@ def patient_detail(patient_id):
 
     cursor.close()
     conn.close()
-    
     return render_template('patient_detail.html', patient=patient, conditions=conditions, treatments=treatments)
 
-# 為病患新增病情 (CREATE)
+# Add a condition for a patient (CREATE)
 @app.route('/patient/<int:patient_id>/condition/add', methods=['POST'])
 def add_condition(patient_id):
     conn = get_db_connection()
@@ -162,10 +142,10 @@ def add_condition(patient_id):
     conn.commit()
     cursor.close()
     conn.close()
-    flash('病情已新增', 'success')
+    flash('Condition added successfully.', 'success')
     return redirect(url_for('patient_detail', patient_id=patient_id))
 
-# 為病情新增治療 (CREATE)
+# Add a treatment for a condition (CREATE)
 @app.route('/patient/<int:patient_id>/treatment/add', methods=['POST'])
 def add_treatment(patient_id):
     conn = get_db_connection()
@@ -177,10 +157,10 @@ def add_treatment(patient_id):
     conn.commit()
     cursor.close()
     conn.close()
-    flash('治療方案已新增', 'success')
+    flash('Treatment plan added successfully.', 'success')
     return redirect(url_for('patient_detail', patient_id=patient_id))
     
-# 刪除病情 (DELETE)
+# Delete a condition (DELETE)
 @app.route('/patient/<int:patient_id>/condition/delete/<int:condition_id>', methods=['POST'])
 def delete_condition(patient_id, condition_id):
     conn = get_db_connection()
@@ -189,10 +169,10 @@ def delete_condition(patient_id, condition_id):
     conn.commit()
     cursor.close()
     conn.close()
-    flash('病情已刪除', 'danger')
+    flash('Condition deleted successfully.', 'danger')
     return redirect(url_for('patient_detail', patient_id=patient_id))
     
-# 刪除治療 (DELETE)
+# Delete a treatment (DELETE)
 @app.route('/patient/<int:patient_id>/treatment/delete/<int:treatment_id>', methods=['POST'])
 def delete_treatment(patient_id, treatment_id):
     conn = get_db_connection()
@@ -201,11 +181,10 @@ def delete_treatment(patient_id, treatment_id):
     conn.commit()
     cursor.close()
     conn.close()
-    flash('治療方案已刪除', 'danger')
+    flash('Treatment plan deleted successfully.', 'danger')
     return redirect(url_for('patient_detail', patient_id=patient_id))
 
-# --- 4. 啟動應用程式 ---
-
+# --- 4. Run the Application ---
 if __name__ == '__main__':
-    # debug=True 在開發時很有用，但在生產環境中應設為 False
+    # debug=True is useful for development. It should be set to False in production.
     app.run(debug=True)

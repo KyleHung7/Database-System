@@ -1,38 +1,36 @@
 {% extends 'layout.html' %}
-
-{% block title %}{{ '編輯' if patient else '新增' }}病患{% endblock %}
-
+{% block title %}{{ 'Edit' if patient else 'Add' }} Patient{% endblock %}
 {% block content %}
 <div class="max-w-2xl mx-auto">
-    <a href="{{ url_for('index') }}" class="text-blue-600 hover:underline mb-6 inline-block">&larr; 返回列表</a>
-    <h1 class="text-3xl font-bold mb-6 text-gray-700">{{ '編輯' if patient else '新增' }}病患資料</h1>
+    <a href="{{ url_for('index') }}" class="text-blue-600 hover:underline mb-6 inline-block">&larr; Back to List</a>
+    <h1 class="text-3xl font-bold mb-6 text-gray-700">{{ 'Edit' if patient else 'Add' }} Patient</h1>
 
     <div class="bg-white p-8 rounded-xl shadow-lg">
         <form method="POST" action="{{ url_for(form_action, patient_id=patient.patient_id if patient) }}">
             <div class="mb-4">
-                <label for="name" class="block text-gray-700 text-sm font-bold mb-2">姓名</label>
+                <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
                 <input type="text" name="name" id="name" value="{{ patient.name if patient }}" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <div class="mb-4">
-                <label for="birthdate" class="block text-gray-700 text-sm font-bold mb-2">出生日期</label>
+                <label for="birthdate" class="block text-gray-700 text-sm font-bold mb-2">Date of Birth</label>
                 <input type="date" name="birthdate" id="birthdate" value="{{ patient.birthdate if patient }}" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <div class="mb-4">
-                <label for="gender" class="block text-gray-700 text-sm font-bold mb-2">性別</label>
+                <label for="gender" class="block text-gray-700 text-sm font-bold mb-2">Gender</label>
                 <select name="gender" id="gender" class="shadow-sm border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                    <option value="男" {{ 'selected' if patient and patient.gender == '男' }}>男</option>
-                    <option value="女" {{ 'selected' if patient and patient.gender == '女' }}>女</option>
-                    <option value="其他" {{ 'selected' if patient and patient.gender == '其他' }}>其他</option>
+                    <option value="Male" {{ 'selected' if patient and patient.gender == 'Male' }}>Male</option>
+                    <option value="Female" {{ 'selected' if patient and patient.gender == 'Female' }}>Female</option>
+                    <option value="Other" {{ 'selected' if patient and patient.gender == 'Other' }}>Other</option>
                 </select>
             </div>
             <div class="mb-6">
-                <label for="contact_info" class="block text-gray-700 text-sm font-bold mb-2">聯絡方式 (例如: 手機或 Email)</label>
+                <label for="contact_info" class="block text-gray-700 text-sm font-bold mb-2">Contact Info (Phone or Email)</label>
                 <input type="text" name="contact_info" id="contact_info" value="{{ patient.contact_info if patient }}" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <div class="flex items-center justify-end">
-                <a href="{{ url_for('index') }}" class="text-gray-600 font-bold py-2 px-4 rounded mr-2">取消</a>
+                <a href="{{ url_for('index') }}" class="text-gray-600 font-bold py-2 px-4 rounded mr-2">Cancel</a>
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md focus:outline-none focus:shadow-outline transition duration-300">
-                    儲存資料
+                    Save Patient
                 </button>
             </div>
         </form>
