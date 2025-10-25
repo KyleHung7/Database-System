@@ -56,6 +56,7 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 **Folder:** [HW3](https://github.com/KyleHung7/Database-System/tree/main/HW3)  
 
 <img width="1872" height="662" alt="螢幕擷取畫面 2025-10-23 120336" src="https://github.com/user-attachments/assets/d2ddc1ab-6e42-408e-8c4f-0d9b547cdc67" />
+
 - **Focus**: Build a full stack web application using a **NoSQL** database.  
 - **Key Concepts**:  
   - NoSQL database structure and document-based storage  
