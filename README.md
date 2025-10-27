@@ -38,10 +38,10 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 ---
 
 ### **HW2: SQL CRUD Operations**  
-**Folder:**
+**Folder:** [HW2](https://github.com/KyleHung7/Database-System/tree/main/HW2)
+**Video:** [https://youtu.be/Wio_kAlHm0E](https://youtu.be/Wio_kAlHm0E)
 
-**Video:** 
-<img width="600" height="897" alt="螢幕擷取畫面 2025-10-23 113504" src="https://github.com/user-attachments/assets/7fecdecc-eca8-45bd-badc-c49e52373b76" />
+<img width="600" height="897" alt="螢幕擷取畫面 2025-10-23 113504" src="https://github.com/user-attachments/assets/309a16a8-be4d-4409-abd3-fb808be0910e" />
 
 
 - **Focus**: Master **Create, Read, Update, Delete (CRUD)** operations with SQL.  
@@ -53,7 +53,10 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 ---
 
 ### **HW3: My First Full Stack Web App with NoSQL**  
-**Folder:** `HW3`  
+**Folder:** [HW3](https://github.com/KyleHung7/Database-System/tree/main/HW3)  
+
+<img width="1872" height="662" alt="螢幕擷取畫面 2025-10-23 120336" src="https://github.com/user-attachments/assets/d2ddc1ab-6e42-408e-8c4f-0d9b547cdc67" />
+
 - **Focus**: Build a full stack web application using a **NoSQL** database.  
 - **Key Concepts**:  
   - NoSQL database structure and document-based storage  
@@ -64,6 +67,8 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 
 ### **HW4: Query Data 3 (Delete with `deleteMany`)**  
 **Folder:** `HW4`  
+
+
 - **Focus**: Learn advanced NoSQL query operations with deletion.  
 - **Key Concepts**:  
   - Using `db.collection.deleteMany()` to remove multiple documents  
