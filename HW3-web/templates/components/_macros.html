@@ -1,0 +1,17 @@
+{# templates/components/_macros.html #}
+{% macro display_gain_loss(value, is_percent=false) %}
+    {% set color_class = 'text-gain' if value > 0 else 'text-loss' if value < 0 else 'text-neutral' %}
+    <span class="fw-bold {{ color_class }}">
+        {% if value > 0 %}+{% endif %}
+        {% if is_percent %}
+            {{ "%.1f"|format(value) }}%
+        {% else %}
+            ${{ "%.0f"|format(value) }}
+        {% endif %}
+    </span>
+{% endmacro %}
+
+{% macro display_number(value, prefix='$', decimals=0) %}
+    {% set formatted_value = ("%." ~ decimals ~ "f")|format(value) %}
+    {{ prefix }}{{ formatted_value }}
+{% endmacro %}

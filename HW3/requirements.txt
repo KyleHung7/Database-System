@@ -1,4 +1,26 @@
-flask
-pymongo[srv]
-python-dotenv
-requests
+# Flask Core
+Flask==3.0.3
+Werkzeug==3.0.3
+Jinja2==3.1.4
+itsdangerous==2.2.0
+click==8.1.7
+blinker==1.8.2
+
+# Database
+pymongo[srv]==4.7.3
+dnspython==2.6.1
+
+# User Authentication
+Flask-Login==0.6.3
+
+# Data & API
+yfinance==0.2.40
+pandas==2.2.2
+numpy==1.26.4
+requests==2.32.3
+
+# Environment Management
+python-dotenv==1.0.1
+
+# Scheduler
+apscheduler==3.10.4
