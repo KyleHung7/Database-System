@@ -53,7 +53,8 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 ---
 
 ### **HW3: My First Full Stack Web App with NoSQL**  
-**Folder:** [HW3](https://github.com/KyleHung7/Database-System/tree/main/HW3-web)  
+**Folder:** [HW3](https://github.com/KyleHung7/Database-System/tree/main/HW3-web)
+**Video:** [https://youtu.be/Lf_xU8iwtmA](https://youtu.be/Lf_xU8iwtmA)
 **Website:** [https://stockcord-web.onrender.com](https://stockcord-web.onrender.com)
 
 
