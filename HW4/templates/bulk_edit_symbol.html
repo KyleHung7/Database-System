@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block title %}Bulk Edit Symbol{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Bulk Edit Symbol</h2>
+    <p>Use this form to update a stock symbol for all associated transactions. This is useful if a symbol has changed or was entered incorrectly.</p>
+    <form method="POST" action="{{ url_for('main.bulk_edit_symbol_route') }}" class="card p-4">
+        <div class="mb-3">
+            <label for="old_symbol" class="form-label">Old Symbol</label>
+            <input type="text" class="form-control" id="old_symbol" name="old_symbol" required placeholder="e.g., BRK.A">
+        </div>
+        <div class="mb-3">
+            <label for="new_symbol" class="form-label">New Symbol</label>
+            <input type="text" class="form-control" id="new_symbol" name="new_symbol" required placeholder="e.g., BRKA">
+        </div>
+        <button type="submit" class="btn btn-primary">Update Symbol</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stockcord</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        :root { --theme-bg: #f8f9fa; --theme-card-bg: #ffffff; --theme-text: #212529; --theme-secondary-text: #6c757d; --theme-border: #dee2e6; --theme-primary: #0d6efd; --theme-gain: #198754; --theme-loss: #dc3545; --theme-form-bg: #f8f9fa; }
+        [data-bs-theme="dark"] { --theme-bg: #121212; --theme-card-bg: #1e1e1e; --theme-text: #e9ecef; --theme-secondary-text: #adb5bd; --theme-border: #495057; --theme-primary: #4dabf7; --theme-gain: #4ade80; --theme-loss: #f87171; --theme-form-bg: #2c2c2e; }
+        body { background-color: var(--theme-bg); color: var(--theme-text); transition: background-color 0.2s ease-in-out; }
+        .card { background-color: var(--theme-card-bg); border: 1px solid var(--theme-border); }
+        .card-header, .modal-header, .modal-footer { background-color: transparent; border-color: var(--theme-border); }
+        .table { --bs-table-color: var(--theme-text); --bs-table-border-color: var(--theme-border); }
+        .table-hover > tbody > tr:hover > * { --bs-table-hover-color: var(--theme-text); }
+        .dropdown-menu { background-color: var(--theme-card-bg); border-color: var(--theme-border); }
+        .dropdown-item { color: var(--theme-text); }
+        .dropdown-item:hover { background-color: rgba(128,128,128,0.1); }
+        .modal-content { background-color: var(--theme-card-bg); }
+        .form-control { background-color: var(--theme-form-bg); border-color: var(--theme-border); color: var(--theme-text); }
+        .form-control:focus { background-color: var(--theme-form-bg); border-color: var(--theme-primary); color: var(--theme-text); box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25); }
+        .text-primary { color: var(--theme-primary) !important; }
+        .text-secondary { color: var(--theme-secondary-text) !important; }
+        .text-gain { color: var(--theme-gain) !important; }
+        .text-loss { color: var(--theme-loss) !important; }
+    </style>
+
+    <script>
+        (function() {
+            const getTheme = () => localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-bs-theme', getTheme());
+        })();
+    </script>
+</head>
+<body>
+    <div class="container py-3 py-md-4">
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="fw-bold text-primary mb-0 fs-3">
+                <a href="{{ url_for('main.index') }}" class="text-decoration-none">
+                    <i class="bi bi-graph-up-arrow me-2"></i>Stockcord
+                </a>
+            </h1>
+            <div class="d-flex align-items-center gap-2">
+                {% if current_user.is_authenticated %}
+                    <span class="text-secondary d-none d-sm-inline">Hi, {{ current_user.username }}</span>
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-secondary btn-sm">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-sm">Login</a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Sign Up</a>
+                {% endif %}
+                <button id="theme-toggle" class="btn btn-outline-secondary border-0">
+                    <i class="bi bi-sun-fill d-none" id="theme-icon-sun"></i>
+                    <i class="bi bi-moon-stars-fill d-none" id="theme-icon-moon"></i>
+                </button>
+            </div>
+        </header>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const sunIcon = document.getElementById('theme-icon-sun');
+            const moonIcon = document.getElementById('theme-icon-moon');
+            const updateIcons = (theme) => {
+                if (theme === 'dark') { sunIcon.classList.remove('d-none'); moonIcon.classList.add('d-none'); } 
+                else { moonIcon.classList.remove('d-none'); sunIcon.classList.add('d-none'); }
+            };
+            const toggleTheme = () => {
+                const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateIcons(newTheme);
+            };
+            themeToggleBtn.addEventListener('click', toggleTheme);
+            updateIcons(document.documentElement.getAttribute('data-bs-theme'));
+            
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        });
+    </script>
+</body>
+</html>

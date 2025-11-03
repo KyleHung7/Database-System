@@ -1,0 +1,132 @@
+{% extends 'layout.html' %}
+{% from 'components/_macros.html' import display_gain_loss, display_number %}
+
+{% block content %}
+<!-- Portfolio Summary Card -->
+<div class="card mb-4">
+    <div class="card-body pt-4">
+        {% if grand_total and grand_total.cost_basis > 0 %}
+            <div class="row text-center gy-4">
+                <div class="col-6 col-md-3">
+                    <small class="text-uppercase text-secondary fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">Market Value</small>
+                    <h3 class="fw-bold mt-1 mb-0">{{ display_number(grand_total.market_value) }}</h3>
+                </div>
+                <div class="col-6 col-md-3">
+                    <small class="text-uppercase text-secondary fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">Day's Change</small>
+                    <h3 class="mt-1 mb-0">{{ display_gain_loss(grand_total.day_change) }}</h3>
+                </div>
+                <div class="col-6 col-md-3">
+                    <small class="text-uppercase text-secondary fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">Total G/L</small>
+                    <h3 class="mt-1 mb-0">{{ display_gain_loss(grand_total.total_gain_loss) }}</h3>
+                </div>
+                <div class="col-6 col-md-3">
+                    <small class="text-uppercase text-secondary fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">Return</small>
+                    {% set total_return = (grand_total.total_gain_loss / grand_total.cost_basis * 100) if grand_total.cost_basis > 0 else 0 %}
+                    <h3 class="mt-1 mb-0">{{ display_gain_loss(total_return, is_percent=true) }}</h3>
+                </div>
+            </div>
+        {% else %}
+            <div class="text-center py-4 text-secondary">
+                <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                <p>Portfolio is empty. Start by adding a transaction.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Main Content: Holdings and Actions -->
+<div class="card">
+    <div class="card-body p-0">
+        <div class="p-3 d-flex justify-content-between align-items-center gap-3 border-bottom">
+            <div>
+                <h4 class="mb-0 fw-bold"><i class="bi bi-list-stars me-2"></i>Holdings</h4>
+                {% if last_updated %}
+                    <small class="text-secondary" title="{{ last_updated.strftime('%Y-%m-%d %H:%M:%S') }} UTC">
+                        Prices as of {{ last_updated.strftime('%b %d, %H:%M') }} UTC
+                    </small>
+                {% else %}
+                    <small class="text-warning">No price data available. Click "Refresh" to fetch.</small>
+                {% endif %}
+            </div>
+            <div class="d-flex gap-2">
+                <form action="{{ url_for('main.refresh_prices_route') }}" method="POST">
+                    <button type="submit" class="btn btn-outline-info" data-bs-toggle="tooltip" title="Fetches latest prices. Limited to once every 5 minutes.">
+                        <i class="bi bi-arrow-clockwise"></i> <span class="d-none d-sm-inline">Refresh</span>
+                    </button>
+                </form>
+                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#addTransactionCollapse">
+                    <i class="bi bi-plus-lg me-1"></i> <span class="d-none d-sm-inline">Add</span>
+                </button>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary" type="button" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg">
+                        <li><h6 class="dropdown-header">Manage Data</h6></li>
+                        <li><a class="dropdown-item" href="{{ url_for('main.list_transactions') }}"><i class="bi bi-clock-history me-2"></i>Transaction History</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#csvImportModal"><i class="bi bi-file-earmark-arrow-up me-2"></i>Import CSV</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('main.export_csv_route') }}"><i class="bi bi-file-earmark-arrow-down me-2"></i>Export CSV</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form action="{{ url_for('main.delete_all_route') }}" method="POST" onsubmit="return confirm('DELETE ALL DATA? This cannot be undone.');">
+                                <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash3 me-2"></i>Delete All</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        {% include 'components/_add_transaction_form.html' %}
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="text-secondary text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">
+                    <tr>
+                        <th class="ps-3">Symbol</th>
+                        <th class="text-end d-none d-sm-table-cell">Qty</th>
+                        <th class="text-end d-none d-md-table-cell">Avg Cost</th>
+                        <th class="text-end">Current Price</th>
+                        <th class="text-end">Value</th>
+                        <th class="text-end d-none d-sm-table-cell">Day's G/L</th>
+                        <th class="text-end pe-3">Total G/L</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for holding in holdings %}
+                    <tr>
+                        <td class="ps-3">
+                            <div class="fw-bold">{{ holding.symbol }}</div>
+                            <div class="small text-secondary text-truncate d-none d-sm-block" style="max-width: 120px;">{{ holding.name }}</div>
+                        </td>
+                        <td class="text-end d-none d-sm-table-cell">{{ "%.0f"|format(holding.quantity) if holding.quantity % 1 == 0 else "%.2f"|format(holding.quantity) }}</td>
+                        <td class="text-end d-none d-md-table-cell text-secondary">{{ display_number(holding.average_cost, decimals=2) }}</td>
+                        
+                        {% if holding.api_error %}
+                            <td class="text-end text-warning" data-bs-toggle="tooltip" title="Price data for this symbol is not available. Click Refresh.">
+                                {{ display_number(holding.current_price, decimals=2) }}
+                            </td>
+                        {% else %}
+                            <td class="text-end fw-bold">{{ display_number(holding.current_price, decimals=2) }}</td>
+                        {% endif %}
+                        
+                        <td class="text-end">{{ display_number(holding.market_value) }}</td>
+                        
+                        {% if holding.api_error %}
+                            <td class="text-end d-none d-sm-table-cell text-secondary">--</td>
+                            <td class="text-end pe-3">{{ display_gain_loss(holding.total_gain_loss) }}</td>
+                        {% else %}
+                            <td class="text-end d-none d-sm-table-cell">{{ display_gain_loss(holding.day_change) }}</td>
+                            <td class="text-end pe-3">{{ display_gain_loss(holding.total_gain_loss) }}</td>
+                        {% endif %}
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7" class="text-center text-secondary py-5">No holdings yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% include 'components/_csv_import_modal.html' %}
+{% endblock %}

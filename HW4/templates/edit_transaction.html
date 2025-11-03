@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card">
+            <div class="card-header py-3">
+                <h5 class="mb-0">Edit Transaction</h5>
+            </div>
+            <div class="card-body p-4">
+                <form action="{{ url_for('main.edit_transaction_route', transaction_id=transaction._id) }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small text-uppercase">Symbol</label>
+                        <input type="text" class="form-control" value="{{ transaction.symbol }}" readonly disabled>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label text-secondary small text-uppercase">Quantity</label>
+                            <input type="number" step="any" class="form-control" name="quantity" value="{{ transaction.quantity }}" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-secondary small text-uppercase">Price</label>
+                            <input type="number" step="any" class="form-control" name="price" value="{{ transaction.price }}" required>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-4">
+                        <a href="{{ url_for('main.list_transactions') }}" class="btn btn-outline-secondary flex-grow-1">Cancel</a>
+                        <button type="submit" class="btn btn-success flex-grow-1">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
