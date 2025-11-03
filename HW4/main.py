@@ -96,27 +96,74 @@ def list_transactions():
 @login_required
 def add_transaction_route():
     user_id = ObjectId(current_user.id)
-    symbol = request.form['symbol'].strip().upper()
-    if symbol.isdigit() and len(symbol) == 4: symbol += ".TW"
+    symbol = request.form.get('symbol', '').strip().upper()
+
+    if not symbol:
+        flash("Symbol is required.", "danger")
+        return redirect(url_for('main.index'))
+
+    if symbol.isdigit() and len(symbol) == 4:
+        symbol += ".TW"
+
     try:
-        db.transactions.insert_one({'user_id': user_id, 'symbol': symbol, 'quantity': float(request.form['quantity']), 'price': float(request.form['price']), 'date': datetime.utcnow()})
+        quantity = float(request.form['quantity'])
+        price = float(request.form['price'])
+
+        if quantity <= 0 or price <= 0:
+            flash("Quantity and price must be positive values.", "danger")
+            return redirect(url_for('main.index'))
+
+        db.transactions.insert_one({
+            'user_id': user_id,
+            'symbol': symbol,
+            'quantity': quantity,
+            'price': price,
+            'date': datetime.utcnow()
+        })
         recalculate_holding(user_id, symbol)
         flash(f"Added {symbol}. Click 'Refresh Prices' to fetch its latest data.", "info")
-    except: flash("Error adding transaction", "danger")
+
+    except (ValueError, TypeError):
+        flash("Invalid input for quantity or price. Please enter valid numbers.", "danger")
+    except Exception as e:
+        flash(f"An unexpected error occurred: {e}", "danger")
+
     return redirect(url_for('main.index'))
 
 @bp.route('/edit_transaction/<transaction_id>', methods=['GET', 'POST'])
 @login_required
 def edit_transaction_route(transaction_id):
-    user_id = ObjectId(current_user.id)
-    t = db.transactions.find_one({'_id': ObjectId(transaction_id), 'user_id': user_id})
-    if not t: return redirect(url_for('main.list_transactions'))
-    if request.method == 'POST':
-        db.transactions.update_one({'_id': ObjectId(transaction_id)}, {'$set': {'quantity': float(request.form['quantity']), 'price': float(request.form['price'])}})
-        recalculate_holding(user_id, t['symbol'])
-        flash("Transaction updated successfully.", "success")
+    try:
+        user_id = ObjectId(current_user.id)
+        transaction = db.transactions.find_one({'_id': ObjectId(transaction_id), 'user_id': user_id})
+        if not transaction:
+            flash("Transaction not found.", "danger")
+            return redirect(url_for('main.list_transactions'))
+
+        if request.method == 'POST':
+            quantity = float(request.form['quantity'])
+            price = float(request.form['price'])
+
+            if quantity <= 0 or price <= 0:
+                flash("Quantity and price must be positive values.", "danger")
+                return render_template('edit_transaction.html', transaction=transaction)
+
+            db.transactions.update_one(
+                {'_id': ObjectId(transaction_id)},
+                {'$set': {'quantity': quantity, 'price': price}}
+            )
+            recalculate_holding(user_id, transaction['symbol'])
+            flash("Transaction updated successfully.", "success")
+            return redirect(url_for('main.list_transactions'))
+
+        return render_template('edit_transaction.html', transaction=transaction)
+
+    except (ValueError, TypeError):
+        flash("Invalid input for quantity or price. Please enter valid numbers.", "danger")
         return redirect(url_for('main.list_transactions'))
-    return render_template('edit_transaction.html', transaction=t)
+    except Exception as e:
+        flash(f"An unexpected error occurred: {e}", "danger")
+        return redirect(url_for('main.list_transactions'))
 
 @bp.route('/delete_transaction/<transaction_id>', methods=['POST'])
 @login_required
@@ -134,17 +181,62 @@ def delete_transaction_route(transaction_id):
 def upload_csv_route():
     user_id = ObjectId(current_user.id)
     f = request.files.get('csv_file')
-    if f:
+    
+    if not f:
+        flash("No file uploaded.", "danger")
+        return redirect(url_for('main.index'))
+
+    try:
         db.holdings.delete_many({'user_id': user_id})
         db.transactions.delete_many({'user_id': user_id})
+        
         stream = io.StringIO(f.stream.read().decode("UTF-8"), newline=None)
         reader = csv.DictReader(stream)
-        transactions = [{'user_id': user_id, 'symbol': row['Symbol'].strip().upper(), 'quantity': float(row['Quantity']), 'price': float(row['Price']), 'date': datetime.utcnow()} for row in reader if row.get('Symbol')]
-        if transactions:
-            db.transactions.insert_many(transactions)
-            for sym in {t['symbol'] for t in transactions}: recalculate_holding(user_id, sym)
-            flash("CSV Imported. Click 'Refresh Prices' to fetch the latest data.", "info")
+        
+        transactions_to_insert = []
+        for row in reader:
+            symbol = row.get('Symbol', '').strip().upper()
+            if not symbol:
+                continue # Skip rows without a symbol
+
+            try:
+                quantity = float(row['Quantity'])
+                price = float(row['Price'])
+
+                if quantity <= 0 or price <= 0:
+                    flash(f"Skipping row for {symbol}: Quantity and price must be positive.", "warning")
+                    continue
+
+                transactions_to_insert.append({
+                    'user_id': user_id,
+                    'symbol': symbol,
+                    'quantity': quantity,
+                    'price': price,
+                    'date': datetime.utcnow() # Using current time for all imported transactions
+                })
+            except (ValueError, TypeError):
+                flash(f"Skipping row for {symbol}: Invalid quantity or price format.", "warning")
+            except KeyError as e:
+                flash(f"Skipping row for {symbol}: Missing expected column - {e}.", "warning")
+
+        if transactions_to_insert:
+            db.transactions.insert_many(transactions_to_insert)
+            # Recalculate holdings for all unique symbols imported
+            for sym in {t['symbol'] for t in transactions_to_insert}:
+                recalculate_holding(user_id, sym)
+            flash(f"Successfully imported {len(transactions_to_insert)} transactions. Click 'Refresh Prices' to fetch the latest data.", "success")
+        else:
+            flash("No valid transactions found in the CSV file.", "info")
+
+    except UnicodeDecodeError:
+        flash("Error decoding file. Please ensure the CSV is UTF-8 encoded.", "danger")
+    except csv.Error as e:
+        flash(f"Error parsing CSV file: {e}", "danger")
+    except Exception as e:
+        flash(f"An unexpected error occurred during CSV import: {e}", "danger")
+
     return redirect(url_for('main.index'))
+
 
 @bp.route('/export_csv')
 @login_required

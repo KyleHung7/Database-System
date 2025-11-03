@@ -12,8 +12,17 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+
+        if not username or len(username) < 3:
+            flash('Username must be at least 3 characters long.', 'danger')
+            return render_template('register.html')
+
+        if not password or len(password) < 6:
+            flash('Password must be at least 6 characters long.', 'danger')
+            return render_template('register.html')
+
         if db.users.find_one({'username': username}):
             flash('Username already exists.', 'warning')
         else:
@@ -32,8 +41,18 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     if request.method == 'POST':
-        user_data = db.users.find_one({'username': request.form['username']})
-        if user_data and check_password_hash(user_data['password_hash'], request.form['password']):
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+
+        if not username:
+            flash('Username is required.', 'danger')
+            return render_template('login.html')
+        if not password:
+            flash('Password is required.', 'danger')
+            return render_template('login.html')
+
+        user_data = db.users.find_one({'username': username})
+        if user_data and check_password_hash(user_data['password_hash'], password):
             login_user(User(user_data))
             return redirect(url_for('main.index'))
         flash('Invalid username or password.', 'danger')

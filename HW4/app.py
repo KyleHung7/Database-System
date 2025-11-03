@@ -1,7 +1,7 @@
 # app.py
 from flask import Flask
 import os
-from extensions import db, login_manager
+from extensions import db, login_manager, csrf
 from models import load_user
 from apscheduler.schedulers.background import BackgroundScheduler
 from update_prices import update_stock_prices
@@ -13,6 +13,7 @@ def create_app():
 
     # Initialize extensions
     login_manager.init_app(app)
+    csrf.init_app(app)
 
     @login_manager.user_loader
     def user_loader(user_id):

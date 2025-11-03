@@ -5,6 +5,7 @@
     <h2>Bulk Edit Symbol</h2>
     <p>Use this form to update a stock symbol for all associated transactions. This is useful if a symbol has changed or was entered incorrectly.</p>
     <form method="POST" action="{{ url_for('main.bulk_edit_symbol_route') }}" class="card p-4">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <div class="mb-3">
             <label for="old_symbol" class="form-label">Old Symbol</label>
             <input type="text" class="form-control" id="old_symbol" name="old_symbol" required placeholder="e.g., BRK.A">

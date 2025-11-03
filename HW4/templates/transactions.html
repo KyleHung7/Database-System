@@ -34,6 +34,7 @@
                         <td class="text-end pe-3">
                             <a href="{{ url_for('main.edit_transaction_route', transaction_id=t._id) }}" class="btn btn-sm btn-outline-secondary border-0 p-1" title="Edit"><i class="bi bi-pencil-square"></i></a>
                             <form action="{{ url_for('main.delete_transaction_route', transaction_id=t._id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this transaction?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                 <button type="submit" class="btn btn-sm btn-outline-danger border-0 p-1" title="Delete"><i class="bi bi-x-lg"></i></button>
                             </form>
                         </td>

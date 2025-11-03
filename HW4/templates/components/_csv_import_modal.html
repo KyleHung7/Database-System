@@ -7,6 +7,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form action="{{ url_for('main.upload_csv_route') }}" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div class="modal-body">
                     <p class="text-secondary">Upload a CSV with columns: <code>Symbol</code>, <code>Quantity</code>, <code>Price</code>. <br><strong class="text-danger">Warning: This replaces all current data.</strong></p>
                     <input class="form-control" type="file" name="csv_file" accept=".csv" required>
