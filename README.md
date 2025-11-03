@@ -41,7 +41,8 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 **Folder:** [HW2](https://github.com/KyleHung7/Database-System/tree/main/HW2)
 **Video:** [https://youtu.be/Wio_kAlHm0E](https://youtu.be/Wio_kAlHm0E)
 
-<img width="600" height="897" alt="螢幕擷取畫面 2025-10-23 113504" src="https://github.com/user-attachments/assets/309a16a8-be4d-4409-abd3-fb808be0910e" />
+<img width="1582" height="318" alt="螢幕擷取畫面 2025-11-03 220824" src="https://github.com/user-attachments/assets/1f78fd12-437b-4352-933d-82c2481ff68e" />
+
 
 
 - **Focus**: Master **Create, Read, Update, Delete (CRUD)** operations with SQL.  
@@ -53,9 +54,11 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 ---
 
 ### **HW3: My First Full Stack Web App with NoSQL**  
-**Folder:** [HW3](https://github.com/KyleHung7/Database-System/tree/main/HW3)  
+**Folder:** [HW3-web](https://github.com/KyleHung7/Database-System/tree/main/HW3-web)
+**Video:** [https://youtu.be/Lf_xU8iwtmA](https://youtu.be/Lf_xU8iwtmA)
 
-<img width="1872" height="662" alt="螢幕擷取畫面 2025-10-23 120336" src="https://github.com/user-attachments/assets/d2ddc1ab-6e42-408e-8c4f-0d9b547cdc67" />
+**Website:** [https://stockcord-web.onrender.com](https://stockcord-web.onrender.com)
+
 
 - **Focus**: Build a full stack web application using a **NoSQL** database.  
 - **Key Concepts**:  
