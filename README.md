@@ -69,8 +69,8 @@ Each homework (HW) emphasizes a core concept of database operations and web app 
 ---
 
 ### **HW4: Query Data 3 (Delete with `deleteMany`)**  
-**Folder:** `HW4`  
-
+**Folder:** [HW4](https://github.com/KyleHung7/Database-System/tree/main/HW4)
+**Video:** [https://youtu.be/RexWVdyrpc4](https://youtu.be/RexWVdyrpc4)
 
 - **Focus**: Learn advanced NoSQL query operations with deletion.  
 - **Key Concepts**:  
